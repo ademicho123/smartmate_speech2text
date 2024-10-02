@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Audio Transcription</title>
+</head>
+<body>
+    <h1>Audio Transcription</h1>
+    <form id="uploadForm" enctype="multipart/form-data">
+        <input type="file" id="audioFile" name="audio" accept="audio/*" required>
+        <button type="submit">Transcribe</button>
+    </form>
+    <div id="fileInfo"></div>
+    <div id="transcriptionInfo"></div>
+    <div id="result"></div>
+    <div id="additionalInfo"></div>
+
+    <script>
+        document.getElementById('audioFile').addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            const fileInfo = document.getElementById('fileInfo');
+            fileInfo.textContent = `File: ${file.name}, Type: ${file.type}, Size: ${file.size} bytes`;
+        });
+
+        document.getElementById('uploadForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const transcriptionInfo = document.getElementById('transcriptionInfo');
+            transcriptionInfo.textContent = 'Transcribing...';
+            const response = await fetch('/transcribe', {
+                method: 'POST',
+                body: formData
+            });
+            const data = await response.json();
+            if (data.transcription) {
+                document.getElementById('result').textContent = "Transcription: " + data.transcription;
+                transcriptionInfo.textContent = 'Transcription completed successfully.';
+                document.getElementById('additionalInfo').innerHTML = `
+                    <p>Detected Language: ${data.detected_language}</p>
+                    <p>Transcription 1 (temp=0.0): ${data.transcription1}</p>
+                    <p>Transcription 2 (temp=0.7): ${data.transcription2}</p>
+                    <p>Transcription 3 (auto lang): ${data.transcription3}</p>
+                `;
+            } else if (data.error) {
+                document.getElementById('result').textContent = "Error: " + data.error;
+                transcriptionInfo.textContent = 'Transcription failed.';
+            }
+        });
+    </script>
+</body>
+</html>
