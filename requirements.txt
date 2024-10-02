@@ -1,0 +1,4 @@
+Flask
+torch
+soundfile
+openai-whisper
