@@ -34,7 +34,7 @@ if __name__ == "__main__":
     processor, model = load_model()
 
     # Load an audio file
-    audio_path = "/workspaces/smartmate_speech2text/Recording (online-audio-converter.com).wav"  # Update with your audio file path
+    audio_path = "/workspaces/smartmate_speech2text/harvard.wav"
     audio, sample_rate = sf.read(audio_path)
 
     # Ensure audio is mono
