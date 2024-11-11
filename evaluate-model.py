@@ -50,7 +50,7 @@ if __name__ == "__main__":
     
     # Example test data: (audio_path, reference_text)
     test_data = [
-        ("//workspaces/smartmate_speech2text/harvard.wav", "The stale smell of old beer lingers. It takes heat to bring out the odor. A cold dip restores health and zest. A salt pickle tastes fine with ham. Tacos al pastor are my favorite. A zestful food is the hot cross bun."),
+        ("//workspaces/smartmate_speech2text/harvard.wav", "THE STALE SMELL OF OLD BEER LINGERS. IT TAKES HEAT TO BRING OUT THE ODOR. A COLD DIP RESTORES HEALTH AND ZEST. A SALT PICKLE TASTES FINE WITH HAM. TACOS AL PASTOR ARE MY FAVORITE. A ZESTFUL FOOD IS THE HOT CROSS BUN."),
         #("/path/to/audio2.wav", "reference transcription two"),
         
     ]

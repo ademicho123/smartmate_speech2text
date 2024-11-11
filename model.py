@@ -1,5 +1,6 @@
 import torch
 from transformers import Wav2Vec2ForCTC, Wav2Vec2Processor
+from deep_translator import GoogleTranslator
 import soundfile as sf
 import numpy as np
 
@@ -27,7 +28,7 @@ def transcribe(audio, processor, model):
     predicted_ids = torch.argmax(logits, dim=-1)
     transcription = processor.batch_decode(predicted_ids)[0]
     return transcription
-'''
+
 # This is used to test the model above
 if __name__ == "__main__":
     # Load the model and processor
@@ -49,4 +50,8 @@ if __name__ == "__main__":
     # Perform transcription
     result = transcribe(audio, processor, model)
     print("Transcription:", result)
-'''
+
+    # Translate the transcription
+    translator = GoogleTranslator(source='auto', target='es')  # Change 'es' to your desired language code
+    translated_result = translator.translate(result)
+    print("Translated Transcription:", translated_result)
