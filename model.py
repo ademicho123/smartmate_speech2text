@@ -1,6 +1,8 @@
+import logging
 import torch
 from transformers import Wav2Vec2ForCTC, Wav2Vec2Processor
 from deep_translator import GoogleTranslator
+from gtts import gTTS
 import soundfile as sf
 import numpy as np
 
@@ -28,14 +30,23 @@ def transcribe(audio, processor, model):
     predicted_ids = torch.argmax(logits, dim=-1)
     transcription = processor.batch_decode(predicted_ids)[0]
     return transcription
+    
+def translate_text(text, to_language):
+    translator = GoogleTranslator(source='auto', target=to_language)
+    translated_text = translator.translate(text)
+    logging.info(f"Translated text: {translated_text}")
+    return translated_text
 
-# This is used to test the model above
-if __name__ == "__main__":
+def text_to_speech(translated_text, language, output_file):
+    tts = gTTS(translated_text, lang=language)
+    tts.save(output_file)
+    logging.info(f"Translated audio saved as '{output_file}'")
+
+def process_audio(audio_path, to_language, output_file):
     # Load the model and processor
     processor, model = load_model()
 
     # Load an audio file
-    audio_path = "/workspaces/smartmate_speech2text/harvard.wav"
     audio, sample_rate = sf.read(audio_path)
 
     # Ensure audio is mono
@@ -44,14 +55,22 @@ if __name__ == "__main__":
 
     # Resample to 16kHz if necessary
     if sample_rate != 16000:
-        # You may want to use a proper resampling method here
         audio = np.interp(np.linspace(0, len(audio), int(len(audio) * 16000 / sample_rate)), np.arange(len(audio)), audio)
 
     # Perform transcription
     result = transcribe(audio, processor, model)
-    print("Transcription:", result)
+    logging.info(f"Transcription: {result}")
 
     # Translate the transcription
-    translator = GoogleTranslator(source='auto', target='es')  # Change 'es' to your desired language code
-    translated_result = translator.translate(result)
-    print("Translated Transcription:", translated_result)
+    translated_result = translate_text(result, to_language)
+    logging.info(f"Translated Transcription: {translated_result}")
+
+    # Convert translated text to audio
+    text_to_speech(translated_result, to_language, output_file)
+
+if __name__ == "__main__":
+    logging.basicConfig(level=logging.INFO)
+    audio_path = "/workspaces/smartmate_speech2text/harvard.wav"
+    to_language = "es"  # Change to your desired language code
+    output_file = "translated_audio.mp3"
+    process_audio(audio_path, to_language, output_file)
